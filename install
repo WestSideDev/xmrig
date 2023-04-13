@@ -1,0 +1,2 @@
+#!/bin/sh
+apt update && apt upgrade && apt install cmake && mkdir build && cd build && cmake .. -DWITH_HWLOC=OFF && make && clear

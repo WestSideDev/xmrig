@@ -2,7 +2,7 @@
 **Clone this repository and run the install file to build and install in your termux, the build can be fast or slow, it just depends on your device**
 
 **Example:**
-+ ``git clone https://github.com/WestSideDev/xmrig``
++ ``git clone https://github.com/WestSideDev/xmrig-android``
 + ``cd xmrig-android && chmod +x *``
 + ``./install``
 

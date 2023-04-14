@@ -3,7 +3,7 @@
 
 **Example:**
 + ``git clone https://github.com/WestSideDev/xmrig``
-+ `` cd xmrig-android && chmod +x *``
++ ``cd xmrig-android && chmod +x *``
 + ``./install``
 
 ## Usage

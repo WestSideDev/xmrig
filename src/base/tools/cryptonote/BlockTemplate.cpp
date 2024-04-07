@@ -1,8 +1,8 @@
 /* XMRig
  * Copyright (c) 2012-2013 The Cryptonote developers
  * Copyright (c) 2014-2021 The Monero Project
- * Copyright (c) 2018-2021 SChernykh   <https://github.com/SChernykh>
- * Copyright (c) 2016-2021 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+ * Copyright (c) 2018-2023 SChernykh   <https://github.com/SChernykh>
+ * Copyright (c) 2016-2023 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -197,12 +197,21 @@ bool xmrig::BlockTemplate::parse(bool hashes)
         ar(m_vote);
     }
 
+    if (m_coin == Coin::ZEPHYR) {
+        uint8_t pricing_record[120];
+        ar(pricing_record);
+    }
+
     // Miner transaction begin
     // Prefix begin
     setOffset(MINER_TX_PREFIX_OFFSET, ar.index());
 
     ar(m_txVersion);
-    ar(m_unlockTime);
+
+    if (m_coin != Coin::TOWNFORGE) {
+      ar(m_unlockTime);
+    }
+
     ar(m_numInputs);
 
     // must be 1 input
@@ -220,8 +229,12 @@ bool xmrig::BlockTemplate::parse(bool hashes)
     ar(m_height);
     ar(m_numOutputs);
 
-    // must be 1 output
-    if (m_numOutputs != 1) {
+    if (m_coin == Coin::ZEPHYR) {
+        if (m_numOutputs < 2) {
+            return false;
+        }
+    }
+    else if (m_numOutputs != 1) {
         return false;
     }
 
@@ -237,8 +250,42 @@ bool xmrig::BlockTemplate::parse(bool hashes)
 
     ar(m_ephPublicKey, kKeySize);
 
-    if (m_outputType == 3) {
+    if (m_coin == Coin::ZEPHYR) {
+        if (m_outputType != 2) {
+            return false;
+        }
+
+        uint64_t asset_type_len;
+        ar(asset_type_len);
+        ar.skip(asset_type_len);
         ar(m_viewTag);
+
+        for (uint64_t k = 1; k < m_numOutputs; ++k) {
+            uint64_t amount2;
+            ar(amount2);
+
+            uint8_t output_type2;
+            ar(output_type2);
+            if (output_type2 != 2) {
+                return false;
+            }
+
+            Span key2;
+            ar(key2, kKeySize);
+
+            ar(asset_type_len);
+            ar.skip(asset_type_len);
+
+            uint8_t view_tag2;
+            ar(view_tag2);
+        }
+    }
+    else if (m_outputType == 3) {
+        ar(m_viewTag);
+    }
+
+    if (m_coin == Coin::TOWNFORGE) {
+      ar(m_unlockTime);
     }
 
     ar(m_extraSize);
@@ -248,6 +295,8 @@ bool xmrig::BlockTemplate::parse(bool hashes)
     BlobReader<true> ar_extra(blob(TX_EXTRA_OFFSET), m_extraSize);
     ar.skip(m_extraSize);
 
+    bool pubkey_offset_first = true;
+
     while (ar_extra.index() < m_extraSize) {
         uint64_t extra_tag  = 0;
         uint64_t size       = 0;
@@ -256,7 +305,10 @@ bool xmrig::BlockTemplate::parse(bool hashes)
 
         switch (extra_tag) {
         case 0x01: // TX_EXTRA_TAG_PUBKEY
-            setOffset(TX_PUBKEY_OFFSET, offset(TX_EXTRA_OFFSET) + ar_extra.index());
+            if (pubkey_offset_first) {
+                pubkey_offset_first = false;
+                setOffset(TX_PUBKEY_OFFSET, offset(TX_EXTRA_OFFSET) + ar_extra.index());
+            }
             ar_extra.skip(kKeySize);
             break;
 
@@ -277,12 +329,24 @@ bool xmrig::BlockTemplate::parse(bool hashes)
         }
     }
 
+    if (m_coin == Coin::ZEPHYR) {
+        uint64_t pricing_record_height, amount_burnt, amount_minted;
+        ar(pricing_record_height);
+        ar(amount_burnt);
+        ar(amount_minted);
+    }
+
     setOffset(MINER_TX_PREFIX_END_OFFSET, ar.index());
     // Prefix end
 
     // RCT signatures (empty in miner transaction)
     uint8_t vin_rct_type = 0;
     ar(vin_rct_type);
+
+    // no way I'm parsing a full game update here
+    if (m_coin == Coin::TOWNFORGE && m_height % 720 == 0) {
+      return true;
+    }
 
     // must be RCTTypeNull (0)
     if (vin_rct_type != 0) {

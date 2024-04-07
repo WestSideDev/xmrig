@@ -1,3 +1,41 @@
+# v6.21.2
+- The dependencies of all prebuilt releases have been updated. Support for old Ubuntu releases has been dropped.
+- [#2800](https://github.com/xmrig/xmrig/issues/2800) Fixed donation with GhostRider algorithm for builds without KawPow algorithm.
+- [#3436](https://github.com/xmrig/xmrig/pull/3436) Fixed, the file log writer was not thread-safe.
+- [#3450](https://github.com/xmrig/xmrig/pull/3450) Fixed RandomX crash when compiled with fortify_source.
+
+# v6.21.1
+- [#3391](https://github.com/xmrig/xmrig/pull/3391) Added support for townforge (monero fork using randomx).
+- [#3399](https://github.com/xmrig/xmrig/pull/3399) Fixed Zephyr mining (OpenCL).
+- [#3420](https://github.com/xmrig/xmrig/pull/3420) Fixed segfault in HTTP API rebind.
+
+# v6.21.0
+- [#3302](https://github.com/xmrig/xmrig/pull/3302) [#3312](https://github.com/xmrig/xmrig/pull/3312) Enabled keepalive for Windows (>= Vista).
+- [#3320](https://github.com/xmrig/xmrig/pull/3320) Added "built for OS/architecture/bits" to "ABOUT".
+- [#3339](https://github.com/xmrig/xmrig/pull/3339) Added SNI option for TLS connections.
+- [#3342](https://github.com/xmrig/xmrig/pull/3342) Update `cn_main_loop.asm`.
+- [#3346](https://github.com/xmrig/xmrig/pull/3346) ARM64 JIT: don't use `x18` register.
+- [#3348](https://github.com/xmrig/xmrig/pull/3348) Update to latest `sse2neon.h`.
+- [#3356](https://github.com/xmrig/xmrig/pull/3356) Updated pricing record size for **Zephyr** solo mining.
+- [#3358](https://github.com/xmrig/xmrig/pull/3358) **Zephyr** solo mining: handle multiple outputs.
+
+# v6.20.0
+- Added new ARM CPU names.
+- [#2394](https://github.com/xmrig/xmrig/pull/2394) Added new CMake options `ARM_V8` and `ARM_V7`.
+- [#2830](https://github.com/xmrig/xmrig/pull/2830) Added API rebind polling.
+- [#2927](https://github.com/xmrig/xmrig/pull/2927) Fixed compatibility with hwloc 1.11.x.
+- [#3060](https://github.com/xmrig/xmrig/pull/3060) Added x86 to `README.md`.
+- [#3236](https://github.com/xmrig/xmrig/pull/3236) Fixed: receive CUDA loader error on Linux too.
+- [#3290](https://github.com/xmrig/xmrig/pull/3290) Added [Zephyr](https://www.zephyrprotocol.com/) coin support for solo mining.
+
+# v6.19.3
+- [#3245](https://github.com/xmrig/xmrig/issues/3245) Improved algorithm negotiation for donation rounds by sending extra information about current mining job.
+- [#3254](https://github.com/xmrig/xmrig/pull/3254) Tweaked auto-tuning for Intel CPUs.
+- [#3271](https://github.com/xmrig/xmrig/pull/3271) RandomX: optimized program generation.
+- [#3273](https://github.com/xmrig/xmrig/pull/3273) RandomX: fixed undefined behavior.
+- [#3275](https://github.com/xmrig/xmrig/pull/3275) RandomX: fixed `jccErratum` list.
+- [#3280](https://github.com/xmrig/xmrig/pull/3280) Updated example scripts.
+
 # v6.19.2
 - [#3230](https://github.com/xmrig/xmrig/pull/3230) Fixed parsing of `TX_EXTRA_MERGE_MINING_TAG`.
 - [#3232](https://github.com/xmrig/xmrig/pull/3232) Added new `X-Hash-Difficulty` HTTP header.
